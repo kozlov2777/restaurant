@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Статуси замовлень</title>
+	<!-- Add the following line to include Bootstrap CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+			font-family: Arial, sans-serif;
+			background-color: #f2f2f2;
+			color: #333;
+		}
+		h1 {
+			text-align: center;
+			font-size: 36px;
+			margin-top: 50px;
+		}
+    </style>
+</head>
+<body>
+    <a href="{% url 'view_menu_list' %}">Меню</a>
+    <a href="{% url 'new_order' %}">Створити нове замовлення</a>
+    <div class="container">
+      <div class="row justify-content-left">
+        <div class="col-md-8">
+          <h2>Готується</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Table number</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Created At</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Employee</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in order_by_status %}
+              <tr>
+                <td><a href="{% url 'order_detail' order_id=order.id %}">{{ order.id }}</a></td>
+                <td><a href="{% url 'order_detail_by_table_number' table_number=order.table_number %}">{{ order.table_number }}</a></td>
+                  <td>{{ order.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.created_at }}</td>
+                <td>{{ order.total }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.employee }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-2">
+          <h2>Готово</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Table number</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Created At</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Employee</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in order_by_status_2 %}
+              <tr>
+                <td><a href="{% url 'order_detail' order_id=order.id %}">{{ order.id }}</a></td>
+                <td><a href="{% url 'order_detail_by_table_number' table_number=order.table_number %}">{{ order.table_number }}</a></td>
+                <td>{{ order.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.created_at }}</td>
+                <td>{{ order.total }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.employee }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+	<!-- Add the following line to include Bootstrap JS -->
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

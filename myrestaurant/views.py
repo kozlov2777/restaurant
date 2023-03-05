@@ -133,3 +133,54 @@ def order_detail_by_table_number(request, table_number):
         return render(request, 'order_detail_by_table_number.html', {'detail_by_table': detail_by_table})
 
 
+def order_by_status(request):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT o.id, o.table_number, m.name, oi.quantity, o.created_at, SUM(m.price * oi.quantity) as total, s.name, e.first_name FROM myrestaurant_order o INNER JOIN myrestaurant_orderitem oi ON o.id = oi.order_id INNER JOIN myrestaurant_menuitem m ON oi.item_id = m.id INNER JOIN myrestaurant_employee e ON o.employee_id = e.id INNER JOIN myrestaurant_status s ON o.status_id = s.id WHERE o.status_id = 1 GROUP BY o.id, m.id ORDER BY o.created_at DESC;"
+        )
+        rows = cursor.fetchall()
+        order_by_status = []
+        for row in rows:
+            order_by_status.append({
+                'id': row[0],
+                'table_number': row[1],
+                'name': row[2],
+                'quantity': row[3],
+                'created_at': row[4],
+                'total': row[5],
+                'status': row[6],
+                'employee': row[7],
+            })
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT o.id, o.table_number, m.name, oi.quantity, o.created_at, SUM(m.price * oi.quantity) as total, s.name, e.first_name FROM myrestaurant_order o INNER JOIN myrestaurant_orderitem oi ON o.id = oi.order_id INNER JOIN myrestaurant_menuitem m ON oi.item_id = m.id INNER JOIN myrestaurant_employee e ON o.employee_id = e.id INNER JOIN myrestaurant_status s ON o.status_id = s.id WHERE o.status_id = 2 GROUP BY o.id, m.id ORDER BY o.created_at DESC;"
+        )
+        rows = cursor.fetchall()
+        order_by_status_2 = []
+        for row in rows:
+            order_by_status_2.append({
+                'id': row[0],
+                'table_number': row[1],
+                'name': row[2],
+                'quantity': row[3],
+                'created_at': row[4],
+                'total': row[5],
+                'status': row[6],
+                'employee': row[7],
+            })
+
+    return render(request, 'order_by_status.html', {'order_by_status': order_by_status, 'order_by_status_2': order_by_status_2})
+
+def employee_salary(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT e.first_name, e.last_name, COUNT(o.id) * 30 AS salary FROM myrestaurant_order o JOIN myrestaurant_employee e ON o.employee_id = e.id GROUP BY e.id;");
+        rows = cursor.fetchall()
+        salary = []
+        for row in rows:
+            salary.append({
+                'firstname': row[0],
+                'secondname': row[1],
+                'salary': row[2],
+            })
+        return render(request, 'salary.html' , {'salary': salary})

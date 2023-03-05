@@ -31,22 +31,11 @@ class Ingredient(models.Model):
         return self.name
 
 
-class Order(models.Model):
-    table_number = models.IntegerField()
-    created_at = models.DateTimeField(default=timezone.now)
-    items = models.ManyToManyField(MenuItem, through='OrderItem')
+class Status(models.Model):
+    name = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"Order {self.id}"
-
-
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-
-    def __str__(self):
-        return f"{self.quantity} x {self.item.name}"
+        return self.name
 
 
 class Role(models.Model):
@@ -61,6 +50,29 @@ class Employee(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
+
+
+class Order(models.Model):
+    table_number = models.IntegerField()
+    created_at = models.DateTimeField(default=timezone.now)
+    items = models.ManyToManyField(MenuItem, through='OrderItem')
+    status = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True, blank=True)
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"Order {self.id}"
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.item.name}"
+
+
+
 
 
 
