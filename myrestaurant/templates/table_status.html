@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Зарплати</title>
+	<title>Столики</title>
 	<style>
 		body {
 			font-family: Arial, sans-serif;
@@ -41,22 +41,20 @@
         <a href="{% url 'category_list' %}" style="margin-right: 10px;">Категорії</a>
         <a href="{% url 'view_order_list' %}" style="margin-right: 10px;">Всі замовлення</a>
     </div>
-	<h1>Зарплати</h1>
+	<h1>Столики</h1>
 	<table border="2">
 		<thead>
 			<tr>
-				<th>Ім’я</th>
-				<th>Фамілія</th>
-				<th>Зарплата</th>
+				<th>Ід</th>
+				<th>Статус</th>
 
 			</tr>
 		</thead>
 		<tbody>
-			{% for s in salary %}
+			{% for t in tables %}
 			<tr>
-				<td>{{ s.firstname }}</td>
-				<td>{{ s.secondname }}</td>
-				<td>{{ s.salary}}</td>
+				<td>{{ t.id }}</td>
+				<td>{{ t.table_status_name }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>

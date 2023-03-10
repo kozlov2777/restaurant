@@ -33,6 +33,14 @@
 	</style>
 </head>
 <body>
+    <div style="margin-bottom: 50px;">
+        <a href="{% url 'view_menu_list' %}" style="margin-right: 10px;">Меню</a>
+        <a href="{% url 'new_order' %}" style="margin-right: 10px;">Створити нове замовлення</a>
+        <a href="{% url 'tables' %}" style="margin-right: 10px;">Вільні столики</a>
+        <a href="{% url 'salary' %}" style="margin-right: 10px;">Зарплата</a>
+        <a href="{% url 'category_list' %}" style="margin-right: 10px;">Категорії</a>
+        <a href="{% url 'view_order_list' %}" style="margin-right: 10px;">Всі замовлення</a>
+    </div>
 	<h1>Деталі замовлення</h1>
 	<table border="2">
 		<thead>

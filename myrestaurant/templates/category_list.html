@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Меню</title>
+	<title>Категорії</title>
 	<style>
 		body {
 			font-family: Arial, sans-serif;
@@ -33,15 +33,23 @@
 	</style>
 </head>
 <body>
-	<h1>Меню</h1>
+    <div style="margin-bottom: 50px;">
+        <a href="{% url 'view_menu_list' %}" style="margin-right: 10px;">Меню</a>
+        <a href="{% url 'new_order' %}" style="margin-right: 10px;">Створити нове замовлення</a>
+        <a href="{% url 'tables' %}" style="margin-right: 10px;">Вільні столики</a>
+        <a href="{% url 'salary' %}" style="margin-right: 10px;">Зарплата</a>
+        <a href="{% url 'category_list' %}" style="margin-right: 10px;">Категорії</a>
+        <a href="{% url 'view_order_list' %}" style="margin-right: 10px;">Всі замовлення</a>
+    </div>
+	<h1>Категорії</h1>
 	<table border="2">
 		<thead>
 			<tr>
 				<th>Айди</th>
-				<th>Назва</th>
-				<th>Опис</th>
+				<th>Назва категорії</th>
+				<th>Назва блюда</th>
+				<th>Опис блюда</th>
 				<th>Ціна</th>
-				<th>Фото</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -49,9 +57,9 @@
 			<tr>
 				<td>{{ category.id }}</td>
 				<td>{{ category.name }}</td>
+				<td>{{ category.name1 }}</td>
 				<td>{{ category.description }}</td>
 				<td>{{ category.price }}</td>
-				<td><img src="{{ category.image }}" alt="{{ category.name }}"></td>
 			</tr>
 			{% endfor %}
 		</tbody>

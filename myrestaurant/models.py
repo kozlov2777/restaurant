@@ -52,8 +52,23 @@ class Employee(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
 
+class Table_Status(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class Table(models.Model):
+    id = models.AutoField(primary_key=True)
+    table_status = models.ForeignKey(Table_Status, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"Table {self.id}"
+
+
 class Order(models.Model):
-    table_number = models.IntegerField()
+    table_id = models.ForeignKey(Table, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     items = models.ManyToManyField(MenuItem, through='OrderItem')
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True, blank=True)

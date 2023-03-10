@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>New Order Form</title>
+    <title>Створити нове замовлення</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
         body {
@@ -18,27 +18,37 @@
     </style>
 </head>
 <body>
-    <a href="/">Головна</a>
-    <a href="{% url 'view_menu_list' %}">Меню</a>
-    <a href="{% url 'new_order' %}">Створити нове замовлення</a>
+    <div style="margin-bottom: 50px;">
+        <a href="{% url 'view_menu_list' %}" style="margin-right: 10px;">Меню</a>
+        <a href="{% url 'new_order' %}" style="margin-right: 10px;">Створити нове замовлення</a>
+        <a href="{% url 'tables' %}" style="margin-right: 10px;">Вільні столики</a>
+        <a href="{% url 'salary' %}" style="margin-right: 10px;">Зарплата</a>
+        <a href="{% url 'category_list' %}" style="margin-right: 10px;">Категорії</a>
+        <a href="{% url 'view_order_list' %}" style="margin-right: 10px;">Всі замовлення</a>
+    </div>
     <div class="container">
         <div class="row justify-content-left">
             <div class="col-md-8">
                 <h1>Створити нове замовлення</h1>
-                <form method="post" action="{% url 'new_order' %}">
+                <form method="post">
                     {% csrf_token %}
-                    <label for="table_number">Table Number:</label>
-                    <input type="number" id="table_number" name="table_number"><br><br>
-
+                    <label for="table_id_id">Номер столика:</label>
+                    <input type="number" name="table_id_id" required><br><br>
+                    <label for="employee_id">ІД працівника:</label>
+                    <input type="number" name="employee_id" required><br><br>
+                    <label for="status_id">Статус:</label>
+                    <input type="number" name="status_id" required><br><br>
+                    <label>Menu Items:</label><br>
                     {% for item in menu_items %}
-                        <label for="item_{{ item.id }}">{{ item.name }}:</label>
-                        <input type="number" id="item_{{ item.id }}" name="item" value="{{ item.id }}"><br>
-
-                        <label for="quantity_{{ item.id }}">Quantity:</label>
-                        <input type="number" id="quantity_{{ item.id }}" name="quantity"><br><br>
+                    <input type="checkbox" name="item" value="{{ item.id }}"> {{ item.name }} - {{ item.price }}<br>
                     {% endfor %}
-
-                    <input type="submit" value="Create Order">
+                    <br>
+                    <label>Quantities:</label><br>
+                    {% for item in menu_items %}
+                    <input type="number" name="quantity" value="0" min="0" max="10"><br>
+                    {% endfor %}
+                    <br>
+                    <input type="submit" value="Submit">
                 </form>
             </div>
         </div>

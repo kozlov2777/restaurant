@@ -77,11 +77,14 @@ WSGI_APPLICATION = 'restaurant.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'restaurant',
+        'OPTIONS': {
+                    'sql_mode': 'STRICT_ALL_TABLES',
+        },
+        'NAME': 'kursova',
         'USER': 'student',
         'PASSWORD': '123',
         'HOST': '127.0.0.1',
-        # 'PORT': '3306',
+        'PORT': '3306',
     }
 }
 
