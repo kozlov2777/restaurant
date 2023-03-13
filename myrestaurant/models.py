@@ -26,9 +26,20 @@ class Ingredient(models.Model):
     name = models.CharField(max_length=255)
     quantity = models.FloatField()
     unit = models.CharField(max_length=50)
+    calories = models.FloatField()
 
     def __str__(self):
         return self.name
+
+
+class IngredientItem(models.Model):
+    item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    unit = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.item.name}"
 
 
 class Status(models.Model):

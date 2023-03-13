@@ -1,15 +1,12 @@
-from django.shortcuts import render
-
 from django.db import connection
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from .models import MenuItem, Order, OrderItem
 from django.http import HttpResponseServerError
 
 
 def menu_view(request):
     with connection.cursor() as cursor:
-        cursor.execute('SELECT id, name, description, price FROM myrestaurant_menuitem')
+        cursor.execute('SELECT m.id, m.name, m.description, m.price, c.name AS category, i.calories*ii.quantity AS calories FROM myrestaurant_menuitem m JOIN myrestaurant_ingredientitem ii ON ii.item_id = m.id JOIN myrestaurant_ingredient i ON i.id=ii.ingredient_id JOIN myrestaurant_category c ON c.id=m.category_id;')
         rows = cursor.fetchall()
         menu_list = []
         for row in rows:
@@ -18,6 +15,8 @@ def menu_view(request):
                 'name': row[1],
                 'description': row[2],
                 'price': row[3],
+                'category': row[4],
+                'calories': row[5],
             })
 
     return render(request, 'menu.html', {'menu_list': menu_list})
@@ -73,21 +72,28 @@ def new_order(request):
                 item_id = items[i]
                 quantity = quantities[i]
                 cursor.execute("INSERT INTO myrestaurant_orderitem (order_id, item_id, quantity) VALUES (%s, %s, %s)", [order_id, item_id, quantity])
-
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM myrestaurant_order WHERE id = %s", [order_id])
-            order_data = cursor.fetchone()
-
-            cursor.execute("SELECT myrestaurant_menuitem.*, myrestaurant_orderitem.quantity FROM myrestaurant_menuitem JOIN myrestaurant_orderitem ON myrestaurant_menuitem.id = myrestaurant_orderitem.item_id WHERE myrestaurant_orderitem.order_id = %s", [order_id])
-            items_data = cursor.fetchall()
-
-        order = Order(id=order_data[0], table_id_id=order_data[1], created_at=order_data[2], employee_id=order_data[3], status_id=order_data[4])
-        order_items = [OrderItem(item=MenuItem(id=item[0], name=item[1], price=item[2]), quantity=item[3]) for item in items_data]
-
         return redirect('order_by_status')
     else:
-        menu_items = MenuItem.objects.all()
-        return render(request, 'new_order.html', {'menu_items': menu_items})
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT m.id, m.name, m.description, m.price FROM myrestaurant_menuitem m")
+            rows = cursor.fetchall()
+            menu_items = []
+            for row in rows:
+                menu_items.append({
+                    'id': row[0],
+                    'name': row[1],
+                    'description': row[2],
+                    'price': row[3],
+                })
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT t.id FROM myrestaurant_table t WHERE t.table_status_id = 1")
+            rows = cursor.fetchall()
+            free_table = []
+            for row in rows:
+                free_table.append({
+                    'id': row[0],
+                })
+        return render(request, 'new_order.html', {'menu_items': menu_items, 'free_table': free_table})
 
 
 def order_detail(request, order_id):
@@ -174,7 +180,7 @@ def order_by_status(request):
 
 def employee_salary(request):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT e.first_name, e.last_name, COUNT(o.id) * 30 AS salary FROM myrestaurant_order o JOIN myrestaurant_employee e ON o.employee_id = e.id GROUP BY e.id;");
+        cursor.execute("SELECT e.first_name, e.last_name, COUNT(o.id) * 30 +12000 AS salary FROM myrestaurant_order o JOIN myrestaurant_employee e ON o.employee_id = e.id GROUP BY e.id;");
         rows = cursor.fetchall()
         salary = []
         for row in rows:

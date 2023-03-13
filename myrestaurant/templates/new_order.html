@@ -34,6 +34,12 @@
                     {% csrf_token %}
                     <label for="table_id_id">Номер столика:</label>
                     <input type="number" name="table_id_id" required><br><br>
+                    <ul style="display: inline-block;">
+                    {% for table in free_table %}
+                        <li style="display: inline;">{{ table.id }}</li>
+                    {% endfor %}
+                    </ul>
+                    <br><br>
                     <label for="employee_id">ІД працівника:</label>
                     <input type="number" name="employee_id" required><br><br>
                     <label for="status_id">Статус:</label>
