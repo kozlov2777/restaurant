@@ -3,7 +3,241 @@ from myrestaurant.models import *
 from django.urls import reverse
 
 
-class MenuViewTestCase(TestCase):
+class ModelsTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        category = Category.objects.create(
+            name='test')
+        menu_item = MenuItem.objects.create(
+            name='test',
+            description='test',
+            price=5.99,
+            category=category,
+            image=None
+        )
+        ingredient = Ingredient.objects.create(
+            name='test',
+            quantity=100,
+            unit='grm',
+            calories=0.52
+        )
+        ingredient_item = IngredientItem.objects.create(
+            item=menu_item,
+            ingredient=ingredient,
+            quantity=3,
+            unit='test'
+        )
+        status = Status.objects.create(
+            name='test'
+        )
+        role = Role.objects.create(
+            name='test'
+        )
+        employee = Employee.objects.create(
+            first_name='test',
+            last_name='test',
+            role=role
+
+        )
+        table_status = Table_Status.objects.create(
+            name='test'
+        )
+        table = Table.objects.create(
+            table_status=table_status
+        )
+        order = Order.objects.create(
+            table_id=table,
+            created_at=timezone.now(),
+            status=status,
+            employee=employee
+        )
+        order.items.add(menu_item)
+        order_item = OrderItem.objects.create(
+            order=order,
+            item=menu_item,
+            quantity=1
+        )
+
+    def test_name_max_length(self):
+        category = Category.objects.get(id=1)
+        max_length = category._meta.get_field('name').max_length
+        self.assertEqual(max_length, 255)
+
+    def test_mi_name_max_length(self):
+        menu_items = MenuItem.objects.get(id=1)
+        max_length = menu_items._meta.get_field('name').max_length
+        self.assertEqual(max_length, 255)
+
+    def test_i_name_max_length(self):
+        ingredient = Ingredient.objects.get(id=1)
+        max_length = ingredient._meta.get_field('name').max_length
+        self.assertEqual(max_length, 255)
+
+    def test_employee_first_name_max_length(self):
+        employee = Employee.objects.get(id=1)
+        max_length = employee._meta.get_field('first_name').max_length
+        self.assertEqual(max_length, 50)
+
+    def test_employee_last_name_max_length(self):
+        employee = Employee.objects.get(id=1)
+        max_length = employee._meta.get_field('last_name').max_length
+        self.assertEqual(max_length, 50)
+
+    def test_i_unit_max_length(self):
+        ingredient = Ingredient.objects.get(id=1)
+        max_length = ingredient._meta.get_field('unit').max_length
+        self.assertEqual(max_length, 50)
+
+    def test_status_name_max_length(self):
+        status = Status.objects.get(id=1)
+        max_length = status._meta.get_field('name').max_length
+        self.assertEqual(max_length, 50)
+
+    def test_role_name_max_length(self):
+        role = Role.objects.get(id=1)
+        max_length = role._meta.get_field('name').max_length
+        self.assertEqual(max_length, 50)
+
+    def test_table_status_name_max_length(self):
+        table_status = Table_Status.objects.get(id=1)
+        max_length = table_status._meta.get_field('name').max_length
+        self.assertEqual(max_length, 50)
+
+    def test_ii_unit_max_length(self):
+        ingredient_item = IngredientItem.objects.get(id=1)
+        max_length = ingredient_item._meta.get_field('unit').max_length
+        self.assertEqual(max_length, 50)
+
+    def test_category_name(self):
+        category = Category.objects.get(id=1)
+        expected_name = f'{category.name}'
+        self.assertEqual(expected_name, str(category))
+
+    def test_mi_name(self):
+        menu_items = MenuItem.objects.get(id=1)
+        expected_name = f'{menu_items.name}'
+        self.assertEqual(expected_name, str(menu_items))
+
+    def test_mi_price(self):
+        menu_item = MenuItem.objects.get(id=1)
+        expected_price = '5.99'
+        self.assertEqual(expected_price, str(menu_item.price))
+
+    def test_i_quantity(self):
+        ingredient = Ingredient.objects.get(id=1)
+        expected_quantity = '100.0'
+        self.assertEqual(expected_quantity, str(ingredient.quantity))
+
+    def test_oi_quantity(self):
+        order_item = OrderItem.objects.get(id=1)
+        expected_quantity = '1'
+        self.assertEqual(expected_quantity, str(order_item.quantity))
+
+    def test_i_calories(self):
+        ingredient = Ingredient.objects.get(id=1)
+        expected_calories = '0.52'
+        self.assertEqual(expected_calories, str(ingredient.calories))
+
+    def test_ii_quantity(self):
+        ingredient_item = IngredientItem.objects.get(id=1)
+        expected_quantity = '3'
+        self.assertEqual(expected_quantity, str(ingredient_item.quantity))
+
+
+
+    def test_menu_item_category(self):
+        menu_item = MenuItem.objects.get(id=1)
+        category = menu_item.category
+        expected_category_name = 'test'
+        self.assertEqual(expected_category_name, category.name)
+
+    def test_order_table(self):
+        order = Order.objects.get(id=1)
+        table = order.table_id
+        expected_table = 1
+        self.assertEqual(expected_table, table.id)
+
+    def test_order_employee(self):
+        order = Order.objects.get(id=1)
+        employee = order.employee.id
+        expected_employee = 1
+        self.assertEqual(expected_employee, employee)
+
+    # def test_order_item(self):
+    #     order = Order.objects.get(id=1)
+    #     item = order.items.name
+    #     expected_item = 'test'
+    #     self.assertEqual(expected_item, item)
+
+    def test_order_created(self):
+        order = Order.objects.get(id=1)
+        created_at = order.created_at.year
+        created_at1 = order.created_at.month
+        created_at2 = order.created_at.day
+        created_at3 = order.created_at.hour
+        created_at4 = order.created_at.minute
+        expected_time = timezone.now().year
+        expected_time1 = timezone.now().month
+        expected_time2 = timezone.now().day
+        expected_time3 = timezone.now().hour
+        expected_time4 = timezone.now().minute
+        self.assertEqual(expected_time, created_at)
+        self.assertEqual(expected_time1, created_at1)
+        self.assertEqual(expected_time2, created_at2)
+        self.assertEqual(expected_time3, created_at3)
+        self.assertEqual(expected_time4, created_at4)
+
+
+    def test_ii_items(self):
+        ingredient_item = IngredientItem.objects.get(id=1)
+        item = ingredient_item.item
+        expected_item_name = 'test'
+        self.assertEqual(expected_item_name, item.name)
+
+    def test_ii_ingredient(self):
+        ingredient_item = IngredientItem.objects.get(id=1)
+        ingredient = ingredient_item.ingredient
+        expected_ingredient_name = 'test'
+        self.assertEqual(expected_ingredient_name, ingredient.name)
+
+    def test_employee_role(self):
+        employee = Employee.objects.get(id=1)
+        role = employee.role
+        expected_role = 'test'
+        self.assertEqual(expected_role, role.name)
+
+    def test_table_table_status(self):
+        table = Table.objects.get(id=1)
+        table_status = table.table_status
+        expected_status = 'test'
+        self.assertEqual(expected_status, table_status.name)
+
+    def test_order_item_order(self):
+        order_item = OrderItem.objects.get(id=1)
+        order = order_item.order.id
+        expected_id = 1
+        self.assertEqual(expected_id, order)
+
+    def test_order_item_item(self):
+        order_item = OrderItem.objects.get(id=1)
+        item = order_item.item.id
+        expected_id = 1
+        self.assertEqual(expected_id, item)
+
+
+
+
+    def test_menu_item_description(self):
+        menu_item = MenuItem.objects.get(id=1)
+        expected_description = 'test'
+        self.assertEqual(expected_description, menu_item.description)
+
+    # def test_menu_item_image_upload(self):
+    #     menu_item = MenuItem.objects.get(id=1)
+    #     self.assertIsNone(menu_item.image)
+
+
+class ViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.client = Client()
