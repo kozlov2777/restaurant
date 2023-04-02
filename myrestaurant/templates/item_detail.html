@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Меню</title>
+	<title>Деталі</title>
 	<style>
 		body {
 			font-family: Arial, sans-serif;
@@ -41,27 +41,25 @@
         <a href="{% url 'category_list' %}" style="margin-right: 10px;">Категорії</a>
         <a href="{% url 'view_order_list' %}" style="margin-right: 10px;">Всі замовлення</a>
     </div>
-	<h1>Меню</h1>
+	<h1>Деталі</h1>
 	<table border="2">
 		<thead>
 			<tr>
-				<th>Айди</th>
-				<th>Назва</th>
-				<th>Опис</th>
-				<th>Ціна</th>
-				<th>Категорія</th>
-				<th>Калорійність</th>
+				<th>Блюдо</th>
+				<th>Кількість в гр або мл</th>
+				<th>Інгрідієнт</th>
+				<th>О.в.</th>
+				<th>Калорії в 1 гр</th>
 			</tr>
 		</thead>
 		<tbody>
-			{% for menu in menu_list %}
+			{% for d in detail %}
 			<tr>
-				<td>{{ menu.id }}</td>
-				<td>{{ menu.name }}</td>
-				<td>{{ menu.description }}</td>
-				<td>{{ menu.price }}</td>
-				<td>{{ menu.category }}</td>
-				<td><a href="{% url 'item_detail' order_id=menu.id %}">{{ menu.calories }}</a></td>
+				<td>{{ d.name }}</td>
+				<td>{{ d.quantity }}</td>
+				<td>{{ d.name1 }}</td>
+				<td>{{ d.unit }}</td>
+				<td>{{ d.calories }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>

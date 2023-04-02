@@ -180,7 +180,7 @@ def order_by_status(request):
 
 def employee_salary(request):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT e.first_name, e.last_name, COUNT(o.id) * 30 +12000 AS salary FROM myrestaurant_order o JOIN myrestaurant_employee e ON o.employee_id = e.id GROUP BY e.id;");
+        cursor.execute("SELECT e.first_name, e.last_name, COUNT(o.id) * 30 +12000 AS salary FROM myrestaurant_order o JOIN myrestaurant_employee e ON o.employee_id = e.id GROUP BY e.id;")
         rows = cursor.fetchall()
         salary = []
         for row in rows:
@@ -194,7 +194,7 @@ def employee_salary(request):
 
 def tables_status(request):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT t.id, ts.name FROM myrestaurant_table t JOIN myrestaurant_table_status ts ON t.table_status_id=ts.id ORDER BY `t`.`id` ASC");
+        cursor.execute("SELECT t.id, ts.name FROM myrestaurant_table t JOIN myrestaurant_table_status ts ON t.table_status_id=ts.id ORDER BY `t`.`id` ASC")
         rows = cursor.fetchall()
         tables = []
         for row in rows:
@@ -210,6 +210,22 @@ def update_order_status(request, order_id):
     with connection.cursor() as cursor:
         cursor.execute('UPDATE myrestaurant_order SET myrestaurant_order.status_id = 2 WHERE myrestaurant_order.id=%s ', [order_id])
     return redirect('order_by_status')
+
+
+def item_detail(request, order_id):
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT mi.name, ii.quantity, i.name, ii.unit, i.calories FROM myrestaurant_menuitem mi JOIN myrestaurant_ingredientitem ii ON ii.item_id = mi.id JOIN myrestaurant_ingredient i ON i.id = ii.ingredient_id WHERE mi.id =%s;', [order_id])
+        rows = cursor.fetchall()
+        detail = []
+        for row in rows:
+            detail.append({
+                'name': row[0],
+                'quantity': row[1],
+                'name1': row[2],
+                'unit': row[3],
+                'calories': row[4],
+            })
+        return render(request, 'item_detail.html', {'detail': detail})
 
 
 def update_order_status_and_table(request, order_id):
