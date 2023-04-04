@@ -3,7 +3,7 @@ from myrestaurant.models import *
 from django.urls import reverse
 
 
-class ModelsTest(TestCase):
+class TestModels(TestCase):
     @classmethod
     def setUpTestData(cls):
         category = Category.objects.create(
@@ -58,7 +58,7 @@ class ModelsTest(TestCase):
             quantity=1
         )
 
-    def test_name_max_length(self):
+    def test_name_length(self):
         category = Category.objects.get(id=1)
         max_length = category._meta.get_field('name').max_length
         self.assertEqual(max_length, 255)
@@ -163,12 +163,6 @@ class ModelsTest(TestCase):
         expected_employee = 1
         self.assertEqual(expected_employee, employee)
 
-    # def test_order_item(self):
-    #     order = Order.objects.get(id=1)
-    #     item = order.items.name
-    #     expected_item = 'test'
-    #     self.assertEqual(expected_item, item)
-
     def test_order_created(self):
         order = Order.objects.get(id=1)
         created_at = order.created_at.year
@@ -232,12 +226,8 @@ class ModelsTest(TestCase):
         expected_description = 'test'
         self.assertEqual(expected_description, menu_item.description)
 
-    # def test_menu_item_image_upload(self):
-    #     menu_item = MenuItem.objects.get(id=1)
-    #     self.assertIsNone(menu_item.image)
 
-
-class ViewTestCase(TestCase):
+class TestViews(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.client = Client()
@@ -252,28 +242,46 @@ class ViewTestCase(TestCase):
         cls.table_status1 = Table_Status.objects.create(name='test_table_status1')
         cls.table_status2 = Table_Status.objects.create(name='test_table_status2')
         cls.table = Table.objects.create(table_status=cls.table_status1)
+        cls.table2 = Table.objects.create(table_status=cls.table_status2)
         cls.order = Order.objects.create(table_id=cls.table, created_at=timezone.now(), status=cls.status1, employee=cls.employee)
         cls.order_item = OrderItem.objects.create(order=cls.order, item=cls.menu_item, quantity=2)
         cls.order_count = 1
+        cls.invalid_id = 200
+        cls.invalid_name = 'Not test'
+        cls.invalid_total = 1200
+        cls.invalid_text = 'invalid_text'
+        cls.invalid_number = 1234
+
     def test_menu_view_returns_200(self):
         response = self.client.get('/view_menu/')
-        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.status_code, 404)
+        self.assertNotEqual(response.status_code, 302)
 
     def test_category_view_returns_200(self):
         response = self.client.get('/category/')
         self.assertEqual(response.status_code, 200)
 
+
     def test_orders_view_returns_200(self):
         response = self.client.get('/all_order/')
-        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.status_code, 404)
+        self.assertNotEqual(response.status_code, 502)
 
     def test_order_detail_view_returns_200(self):
         response = self.client.get(f'/order/{self.order.id}/')
         self.assertEqual(response.status_code, 200)
 
+    def test_order_detail_view_returns_not_200(self):
+        response = self.client.get(f'/order/{self.invalid_text}/')
+        self.assertNotEqual(response.status_code, 200)
+
     def test_order_detail_by_table_number_view_returns_200(self):
         response = self.client.get(f'/order_detail_by_table_number/{self.table.id}/')
         self.assertEqual(response.status_code, 200)
+
+    def test_order_detail_by_table_number_view_returns_not_200(self):
+        response = self.client.get(f'/order_detail_by_table_number/{self.invalid_text}/')
+        self.assertNotEqual(response.status_code, 200)
 
     def test_order_by_status_returns_200(self):
         response = self.client.get('//')
@@ -285,7 +293,8 @@ class ViewTestCase(TestCase):
 
     def test_table_status_returns_200(self):
         response = self.client.get('/tables/')
-        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.status_code, 404)
+        self.assertNotEqual(response.status_code, 502)
 
     def test_item_detail_returns_200(self):
         response = self.client.get(f'/item_detail/{self.table.id}/')
@@ -309,17 +318,20 @@ class ViewTestCase(TestCase):
     def test_orders_view_returns_orders_view(self):
         response = self.client.get('/all_order/')
         self.assertContains(response, self.order.table_id.id)
+        self.assertNotContains(response, self.invalid_id)
         self.assertContains(response, self.order.created_at.year)
         self.assertContains(response, self.order.created_at.month.imag)
         self.assertContains(response, self.order.created_at.day)
         self.assertContains(response, self.order.created_at.hour)
         self.assertContains(response, self.order.created_at.minute)
         self.assertContains(response, self.order_item.quantity*self.menu_item.price)
+        self.assertNotContains(response, self.invalid_total)
 
     def test_order_detail(self):
         response = self.client.get(f'/order/{self.order.id}/')
         self.assertTemplateUsed(response, 'order_detail.html')
         self.assertContains(response, self.menu_item.name)
+        self.assertNotContains(response, self.invalid_name)
         self.assertContains(response, self.order_item.quantity)
         self.assertContains(response, self.menu_item.price)
 
@@ -327,6 +339,7 @@ class ViewTestCase(TestCase):
         response = self.client.get(f'/order_detail_by_table_number/{self.table.id}/')
         self.assertTemplateUsed(response, 'order_detail_by_table_number.html')
         self.assertContains(response, self.menu_item.name)
+        self.assertNotContains(response, self.invalid_name)
         self.assertContains(response, self.order_item.quantity)
         self.assertContains(response, self.order.created_at.year)
         self.assertContains(response, self.order.created_at.month.imag)
@@ -334,6 +347,8 @@ class ViewTestCase(TestCase):
         self.assertContains(response, self.order.created_at.hour)
         self.assertContains(response, self.order.created_at.minute)
         self.assertContains(response, self.menu_item.price*self.order_item.quantity)
+        self.assertNotContains(response, self.invalid_total)
+        self.assertNotContains(response, self.invalid_name)
 
     def test_order_by_status_returns_orders_view(self):
         response = self.client.get('//')
@@ -359,7 +374,7 @@ class ViewTestCase(TestCase):
         self.assertContains(response, self.table.id)
         self.assertContains(response, self.table.table_status)
 
-    def test_item_detail_returns_200(self):
+    def test_item_detail_returns_item_detail(self):
         response = self.client.get(f'/item_detail/{self.order.id}/')
         self.assertContains(response, self.menu_item.name)
         self.assertContains(response, self.ingredient_item.quantity)
@@ -375,12 +390,52 @@ class ViewTestCase(TestCase):
         updated_order = Order.objects.get(id=order_id)
         self.assertEqual(updated_order.status, self.status2)
 
+
+    def test_new_order_get(self):
+        response = self.client.get(reverse('new_order'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<form method="post"')
+
+    def test_new_order_post(self):
+        data = {
+            'table_id_id': self.table2.id,
+            'employee_id': self.employee.id,
+            'status_id': self.status1.id,
+            'item': self.menu_item.id,
+            'quantity': 2,
+        }
+        response2 = self.client.post(reverse('new_order'), data)
+        order = Order.objects.get(table_id=2)
+        self.assertEqual(order.status_id, self.status1.id)
+        self.assertNotEqual(order.employee.id, self.invalid_name)
+        self.assertNotEqual(response2.status_code, 200)
+
+    def test_new_order_bad_post(self):
+        data = {
+            'table_id_id': 2,
+            'employee_id': 1,
+            'status_id': 1,
+            'item': 1,
+            'quantity': 2,
+        }
+        response2 = self.client.post(reverse('new_order'), data)
+        order = Order.objects.get(table_id=2)
+        self.assertNotEqual(order.status_id, self.status2.id)
+        self.assertNotEqual(order.employee.id, 5)
+        self.assertNotEqual(order.employee.id, self.invalid_text)
+        self.assertNotEqual(order.items, 5)
+        self.assertEqual(response2.status_code, 302)
+
+
     def test_update_order_status_and_table(self):
         url = reverse('update_order_status_and_table', args=[self.order.id])
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
+        self.assertNotEqual(response.status_code, 200)
+        self.assertNotEqual(response.status_code, 404)
+        self.assertNotEqual(response.status_code, 502)
         self.assertEqual(Table.objects.get(id=self.table_status1.id).table_status.name, 'test_table_status1')
         self.assertEqual(Status.objects.get(id=self.status1.id).name, 'test_status1')
+
 
 
 

@@ -73,7 +73,7 @@ def new_order(request):
                 quantity = quantities[i]
                 cursor.execute("INSERT INTO myrestaurant_orderitem (order_id, item_id, quantity) VALUES (%s, %s, %s)", [order_id, item_id, quantity])
         return redirect('order_by_status')
-    else:
+    elif request.method == 'GET':
         with connection.cursor() as cursor:
             cursor.execute("SELECT m.id, m.name, m.description, m.price FROM myrestaurant_menuitem m")
             rows = cursor.fetchall()
