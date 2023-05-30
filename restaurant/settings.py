@@ -78,12 +78,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
-                    'sql_mode': 'STRICT_ALL_TABLES',
+            'sql_mode': 'STRICT_ALL_TABLES',
         },
         'NAME': 'kursova',
-        'USER': 'student',
+        'USER': 'root',
         'PASSWORD': '123',
-        'HOST': '127.0.0.1',
+        'HOST': 'db',  # використовуємо ім'я контейнера з базою даних з docker-compose.yml
         'PORT': '3306',
     }
 }
