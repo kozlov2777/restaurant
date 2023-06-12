@@ -6,7 +6,8 @@ from django.http import HttpResponseServerError
 
 def menu_view(request):
     with connection.cursor() as cursor:
-        cursor.execute('SELECT m.id, m.name, m.description, m.price, c.name AS category, i.calories*ii.quantity AS calories FROM myrestaurant_menuitem m JOIN myrestaurant_ingredientitem ii ON ii.item_id = m.id JOIN myrestaurant_ingredient i ON i.id=ii.ingredient_id JOIN myrestaurant_category c ON c.id=m.category_id;')
+        cursor.execute(
+            'SELECT m.id, m.name, m.description, m.price, c.name AS category, ROUND(SUM(i.calories*ii.quantity), 3) AS total_calories FROM myrestaurant_menuitem m JOIN myrestaurant_ingredientitem ii ON ii.item_id = m.id JOIN myrestaurant_ingredient i ON i.id = ii.ingredient_id JOIN myrestaurant_category c ON c.id = m.category_id GROUP BY m.id, m.name, m.description, m.price, c.name;')
         rows = cursor.fetchall()
         menu_list = []
         for row in rows:
@@ -93,14 +94,23 @@ def new_order(request):
                 free_table.append({
                     'id': row[0],
                 })
-        return render(request, 'new_order.html', {'menu_items': menu_items, 'free_table': free_table})
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT e.id, e.last_name FROM myrestaurant_employee e WHERE e.role_id = 1")
+            rows = cursor.fetchall()
+            empl = []
+            for row in rows:
+                empl.append({
+                    'id': row[0],
+                    'last_name': row[1],
+                })
+        return render(request, 'new_order.html', {'menu_items': menu_items, 'free_table': free_table, 'empl':empl})
 
 
 def order_detail(request, order_id):
     try:
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT oi.id, oi.quantity, m.name, m.price FROM myrestaurant_orderitem oi JOIN myrestaurant_menuitem m ON oi.item_id = m.id WHERE oi.order_id =%s", [order_id]
+                "SELECT o.id, m.name, oi.quantity, m.price, o.created_at, e.last_name, o.table_id_id, s.name AS status FROM myrestaurant_orderitem oi JOIN myrestaurant_menuitem m ON oi.item_id = m.id JOIN myrestaurant_order o ON oi.order_id = o.id JOIN myrestaurant_employee e ON o.employee_id=e.id JOIN myrestaurant_status s ON o.status_id = s.id WHERE oi.order_id =%s;", [order_id]
             )
             rows = cursor.fetchall()
             if rows is None:
@@ -110,9 +120,13 @@ def order_detail(request, order_id):
                 for row in rows:
                     detail_list.append({
                         'id': row[0],
-                        'quantity': row[1],
-                        'item_name': row[2],
-                        'item_price': row[3],
+                        'item_name': row[1],
+                        'quantity': row[2],
+                        'price': row[3],
+                        'created_at': row[4],
+                        'last_name': row[5],
+                        'table_id_id': row[6],
+                        'status': row[7],
                     })
                 return render(request, 'order_detail.html', {'detail_list': detail_list})
     except:

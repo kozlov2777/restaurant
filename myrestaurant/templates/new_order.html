@@ -4,57 +4,83 @@
     <meta charset="UTF-8">
     <title>Створити нове замовлення</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-        body {
-			font-family: Arial, sans-serif;
-			background-color: #f2f2f2;
-			color: #333;
-		}
-		h1 {
-			text-align: center;
-			font-size: 36px;
-			margin-top: 50px;
-		}
-    </style>
 </head>
 <body>
-    <div style="margin-bottom: 50px;">
-        <a href="{% url 'view_menu_list' %}" style="margin-right: 10px;">Меню</a>
-        <a href="{% url 'new_order' %}" style="margin-right: 10px;">Створити нове замовлення</a>
-        <a href="{% url 'tables' %}" style="margin-right: 10px;">Вільні столики</a>
-        <a href="{% url 'salary' %}" style="margin-right: 10px;">Зарплата</a>
-        <a href="{% url 'category_list' %}" style="margin-right: 10px;">Категорії</a>
-        <a href="{% url 'view_order_list' %}" style="margin-right: 10px;">Всі замовлення</a>
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'order_by_status' %}">Головна</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'order_by_status' %}">Головна</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'view_menu_list' %}">Меню</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'new_order' %}">Створити нове замовлення</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'tables' %}">Вільні столики</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'salary' %}">Зарплата</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'category_list' %}">Категорії</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'view_order_list' %}">Всі замовлення</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
     <div class="container">
-        <div class="row justify-content-left">
-            <div class="col-md-8">
-                <h1>Створити нове замовлення</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-8 mt-5">
+                <h1 class="text-center mb-4">Створити нове замовлення</h1>
                 <form method="post">
                     {% csrf_token %}
-                    <label for="table_id_id">Номер столика:</label>
-                    <input type="number" name="table_id_id" required><br><br>
-                    <ul style="display: inline-block;">
-                    {% for table in free_table %}
-                        <li style="display: inline;">{{ table.id }}</li>
-                    {% endfor %}
-                    </ul>
-                    <br><br>
-                    <label for="employee_id">ІД працівника:</label>
-                    <input type="number" name="employee_id" required><br><br>
-                    <label for="status_id">Статус:</label>
-                    <input type="number" name="status_id" required><br><br>
-                    <label>Menu Items:</label><br>
-                    {% for item in menu_items %}
-                    <input type="checkbox" name="item" value="{{ item.id }}"> {{ item.name }} - {{ item.price }}<br>
-                    {% endfor %}
-                    <br>
-                    <label>Quantities:</label><br>
-                    {% for item in menu_items %}
-                    <input type="number" name="quantity" value="0" min="0" max="10"><br>
-                    {% endfor %}
-                    <br>
-                    <input type="submit" value="Submit">
+                    <div class="form-group">
+                        <label for="table_id_id">Номер столика:</label>
+                        <input type="number" class="form-control" name="table_id_id" required>
+                        <ul style="display: inline-block;">
+                        {% for free_table in free_table %}
+                            <li style="display: inline;">{{ free_table.id}}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <label for="employee_id">ІД працівника:</label>
+                        <input type="number" class="form-control" name="employee_id" required>
+                        <ul style="display: inline-block;">
+                        {% for empl in empl %}
+                            <li style="display: inline;">{{ empl.id}} - {{ empl.last_name}}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <label for="status_id">Статус:</label>
+                        <input type="number" class="form-control" name="status_id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Menu Items:</label><br>
+                        {% for item in menu_items %}
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="item" value="{{ item.id }}">
+                            <label class="form-check-label">{{ item.name }} - {{ item.price }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label>Quantities:</label><br>
+                        {% for item in menu_items %}
+                        <input type="number" class="form-control" name="quantity" value="0" min="0" max="10">
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
         </div>

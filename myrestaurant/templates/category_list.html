@@ -1,68 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Категорії</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #f2f2f2;
-			color: #333;
-		}
-		h1 {
-			text-align: center;
-			font-size: 36px;
-			margin-top: 50px;
-		}
-		table {
-			margin: 0 auto;
-			border-collapse: collapse;
-			background-color: #fff;
-			box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-		}
-		th, td {
-			padding: 12px;
-			text-align: center;
-		}
-		th {
-			background-color: #333;
-			color: #fff;
-		}
-		tr:nth-child(even) {
-			background-color: #f2f2f2;
-		}
-	</style>
+    <meta charset="UTF-8">
+    <title>Категорії</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-    <div style="margin-bottom: 50px;">
-        <a href="{% url 'view_menu_list' %}" style="margin-right: 10px;">Меню</a>
-        <a href="{% url 'new_order' %}" style="margin-right: 10px;">Створити нове замовлення</a>
-        <a href="{% url 'tables' %}" style="margin-right: 10px;">Вільні столики</a>
-        <a href="{% url 'salary' %}" style="margin-right: 10px;">Зарплата</a>
-        <a href="{% url 'category_list' %}" style="margin-right: 10px;">Категорії</a>
-        <a href="{% url 'view_order_list' %}" style="margin-right: 10px;">Всі замовлення</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'order_by_status' %}">Головна</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'order_by_status' %}">Головна</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'view_menu_list' %}">Меню</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'new_order' %}">Створити нове замовлення</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'tables' %}">Вільні столики</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'salary' %}">Зарплата</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'category_list' %}">Категорії</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'view_order_list' %}">Всі замовлення</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Категорії</h1>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Айди</th>
+                    <th>Назва категорії</th>
+                    <th>Назва блюда</th>
+                    <th>Опис блюда</th>
+                    <th>Ціна</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in category_list %}
+                <tr>
+                    <td>{{ category.id }}</td>
+                    <td>{{ category.name }}</td>
+                    <td>{{ category.name1 }}</td>
+                    <td>{{ category.description }}</td>
+                    <td>{{ category.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-	<h1>Категорії</h1>
-	<table border="2">
-		<thead>
-			<tr>
-				<th>Айди</th>
-				<th>Назва категорії</th>
-				<th>Назва блюда</th>
-				<th>Опис блюда</th>
-				<th>Ціна</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for category in category_list %}
-			<tr>
-				<td>{{ category.id }}</td>
-				<td>{{ category.name }}</td>
-				<td>{{ category.name1 }}</td>
-				<td>{{ category.description }}</td>
-				<td>{{ category.price }}</td>
-			</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
+
