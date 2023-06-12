@@ -70,23 +70,31 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'restaurant.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'sql_mode': 'STRICT_ALL_TABLES',
-        },
         'NAME': 'kursova',
         'USER': 'root',
-        'PASSWORD': '123',
-        'HOST': 'db',  # використовуємо ім'я контейнера з базою даних з docker-compose.yml
+        'PASSWORD': '',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }
+
+#Настройки для докера
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'OPTIONS': {
+#             'sql_mode': 'STRICT_ALL_TABLES',
+#         },
+#         'NAME': 'kursova',
+#         'USER': 'root',
+#         'PASSWORD': '123',
+#         'HOST': 'db',  # використовуємо ім'я контейнера з базою даних з docker-compose.yml
+#         'PORT': '3306',
+#     }
+# }
 
 
 # Password validation
