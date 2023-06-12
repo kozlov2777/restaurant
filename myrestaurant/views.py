@@ -103,7 +103,16 @@ def new_order(request):
                     'id': row[0],
                     'last_name': row[1],
                 })
-        return render(request, 'new_order.html', {'menu_items': menu_items, 'free_table': free_table, 'empl':empl})
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT s.id, s.name FROM myrestaurant_status s")
+            rows = cursor.fetchall()
+            stat = []
+            for row in rows:
+                stat.append({
+                    'id': row[0],
+                    'name': row[1],
+                })
+        return render(request, 'new_order.html', {'menu_items': menu_items, 'free_table': free_table, 'empl':empl, 'stat':stat})
 
 
 def order_detail(request, order_id):
